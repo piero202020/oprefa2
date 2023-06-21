@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html>
+   <head>
+       <script src="jquery.min.js"></script>
+       <!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js" integrity="sha512-K1qjQ+NcF2TYO/eI3M6v8EiNYZfA95pQumfvcVrTHtwQVDG+aHRqLi/ETn2uB+1JqwYqVG3LIvdm9lj6imS/pQ==" crossorigin="anonymous"></script>
+       
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+       
+       <link rel="stylesheet" href="chat.css" >
+       
+      <script type="text/javascript">
+       var ws;
+          function IniciarConexion(){
+                ws= new WebSocket("ws://achex.ca:4010");
+                ws.onopen= function(){
+                    
+                     ws.send('{"setID":"MichatRoom","passwd":"12345"}');
+                }
+                ws.onmessage= function(Mensajes){
+                    var MensajesObtenidos=Mensajes.data;
+                    var objeto= jQuery.parseJSON(MensajesObtenidos);
+                    
+                    if((objeto.ContenidoM!=null)&&(objeto.NombreU!=null)&&(objeto.NombreU!=null)){
+                        // copiar el item del chat y anexarlo al chat
+                        
+                        $( "#plantilla" ).clone().appendTo( ".chat" );
+                        $('.chat #plantilla').show(10);
+                        $('.chat #plantilla .Nombre').html(objeto.NombreU);
+                        //x siacaso 
+                        $('.chat #plantilla .Usuario').html(objeto.UsuarioU);
+                        $('.chat #plantilla .Mensaje').html(objeto.ContenidoM);
+             
+                         var formattedDate = new Date();
+                         var d = formattedDate.getUTCDate();
+                         var m =  formattedDate.getMonth();
+                         var y = formattedDate.getFullYear();
+                         var h= formattedDate.getHours();
+                         var min= formattedDate.getMinutes();
+
+                        Fecha=d+"/"+m+"/"+y+" "+h+":"+min;
+
+                        $('.chat #plantilla .Tiempo').html(Fecha);
+                        $('.chat #plantilla').attr("id","");
+                     }
+                 }
+                ws.onclose= function(){
+                alert("Conexión Cerrada");
+                }
+          }
+          IniciarConexion();
+          
+       </script>
+   </head>
+   <body>
+    <style>
+        #contenedor {
+            justify-content: center;
+  margin: 0 auto;
+  display: flex;
+}
+    </style>
+    <nav class="navbar navbar-inverse" >
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">OPREFA-USUARIO-RECEPCIONISTA.</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Inicio</a></li>
+             
+            <li><a href="#">Ajustes</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Cuenta </a></li>
+            <li><a href="../menu2.php"><span class="glyphicon glyphicon-log-in"></span> Salir</a></li>
+          </ul>
+        </div>
+      </nav>
+        
+      <div class="container">
+      
+        
+      </div>
+        
+        <br>
+         
+    <div id="contenedor" >
+        <div class="col-md-7">
+            <img src="https://www.oprefa.gob.pe/wp-content/uploads/2018/11/oprefa-contact-1-1.png" width="600" height="400" />
+         
+        </div>
+        <div class="col-md-7">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span class="glyphicon glyphicon-comment"></span> Chat
+                     
+                </div>
+                <div class="panel-body">
+                    <ul class="chat"> </ul>
+                </div>
+                <div class="panel-footer">
+                    <div class="input-group">
+                        <input id="Mensaje" type="text" class="form-control input-sm" placeholder="Escribir Mensaje.." />
+                        <span class="input-group-btn">
+                            <button class="btn btn-warning btn-sm" id="btnEnviar" >
+                                Enviar</button>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+       <li style="display:none" id="plantilla" class="left clearfix">
+           <span class="chat-img pull-left">
+             <img src="https://img2.freepng.es/20181127/epz/kisspng-user-logo-product-computer-software-clip-art-new-feature-archives-law-practice-management-softw-5bfcf9c70ee486.256843061543305671061.jpg" width="55" height="45" class="img-circle" />
+           </span>
+            <div class="chat-body clearfix">
+                    <div class="header">
+                      <strong class="primary-font Nombre" >Jack Sparrow</strong> 
+                        <small class="pull-right text-muted">
+                        <span class="glyphicon glyphicon-asterisk Tiempo">
+                        </span> 12/02/2015 </small>
+                    </div>
+                        <p class="Mensaje">
+                               Mensaje
+                        </p>
+                </div>
+            </li>
+       
+       
+    
+      <script>
+         var Nombre="Recepcionista";
+         var Usuario="Asesor";
+         var Tres = Nombre+" "+Usuario;
+             //      var Nombre= prompt("Nombre:");
+    //      var Usuario= prompt("Usuario:");
+    //      var Password= prompt("Password:");
+    //      var Cargo= prompt("Cargo:");
+          
+       $('#btnEnviar').click(function(){
+ws.send('{"to":"MichatRoom","NombreU":"'+Tres+'","ContenidoM":"'+$('#Mensaje').val()+'"}');
+           $('#Mensaje').val("");
+       });
+       </script>
+   </body>
+</html>
